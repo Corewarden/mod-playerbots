@@ -100,6 +100,14 @@ bool RubySanctumBaltharusSplitAddAction::Execute(Event /*event*/)
 
     if (botAI->IsTank(bot))
     {
+        if (Group* group = bot->GetGroup())
+        {
+            uint8 index = RtiTargetValue::GetRtiIndex("skull");
+            ObjectGuid iconGuid = group->GetTargetIcon(index);
+            if (iconGuid != add->GetGUID())
+                group->SetTargetIcon(index, bot->GetGUID(), add->GetGUID());
+        }
+
         if (boss && (botAI->IsMainTank(bot) || boss->GetVictim() == bot))
             return Attack(boss);
 
