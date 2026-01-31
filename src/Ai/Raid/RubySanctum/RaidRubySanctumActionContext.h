@@ -23,6 +23,7 @@ public:
         creators["rubysanctum halion consumption"] = &RaidRubySanctumActionContext::halion_consumption;
         creators["rubysanctum halion meteor"] = &RaidRubySanctumActionContext::halion_meteor;
         creators["rubysanctum halion infernos"] = &RaidRubySanctumActionContext::halion_infernos;
+        creators["rubysanctum halion enter portal"] = &RaidRubySanctumActionContext::halion_enter_portal;
         creators["rubysanctum halion cutter move"] = &RaidRubySanctumActionContext::halion_cutter_move;
         creators["rubysanctum halion balance"] = &RaidRubySanctumActionContext::halion_balance;
     }
@@ -41,6 +42,7 @@ private:
     static Action* halion_consumption(PlayerbotAI* botAI) { return new RubySanctumHalionConsumptionAction(botAI); }
     static Action* halion_meteor(PlayerbotAI* botAI) { return new RubySanctumHalionMeteorStrikeAction(botAI); }
     static Action* halion_infernos(PlayerbotAI* botAI) { return new RubySanctumHalionInfernosAction(botAI); }
+    static Action* halion_enter_portal(PlayerbotAI* botAI) { return new RubySanctumHalionEnterPortalAction(botAI); }
     static Action* halion_cutter_move(PlayerbotAI* botAI) { return new RubySanctumHalionTwilightCutterAction(botAI); }
     static Action* halion_balance(PlayerbotAI* botAI) { return new RubySanctumHalionCorporealityBalanceAction(botAI); }
 };

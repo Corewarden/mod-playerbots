@@ -29,6 +29,8 @@ void RaidRubySanctumStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         { NextAction("rubysanctum halion meteor", ACTION_RAID + 1) }));
     triggers.push_back(new TriggerNode("rubysanctum halion infernos",
         { NextAction("rubysanctum halion infernos", ACTION_RAID + 2) }));
+    triggers.push_back(new TriggerNode("rubysanctum halion enter portal",
+        { NextAction("rubysanctum halion enter portal", ACTION_RAID + 3) }));
     triggers.push_back(new TriggerNode("rubysanctum halion cutter move",
         { NextAction("rubysanctum halion cutter move", ACTION_MOVE + 5) }));
 

@@ -77,6 +77,13 @@ public:
     bool Execute(Event event) override;
 };
 
+class RubySanctumHalionEnterPortalAction : public MovementAction
+{
+public:
+    explicit RubySanctumHalionEnterPortalAction(PlayerbotAI* botAI) : MovementAction(botAI, "rubysanctum halion enter portal") {}
+    bool Execute(Event event) override;
+};
+
 class RubySanctumHalionTwilightCutterAction : public MovementAction
 {
 public:

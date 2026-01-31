@@ -76,6 +76,13 @@ public:
     bool IsActive() override;
 };
 
+class RubySanctumHalionEnterPortalTrigger : public Trigger
+{
+public:
+    explicit RubySanctumHalionEnterPortalTrigger(PlayerbotAI* botAI) : Trigger(botAI, "rubysanctum halion enter portal") {}
+    bool IsActive() override;
+};
+
 class RubySanctumHalionCutterTrigger : public Trigger
 {
 public:

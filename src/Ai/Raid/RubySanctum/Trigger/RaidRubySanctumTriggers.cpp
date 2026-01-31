@@ -1,6 +1,9 @@
 #include "RaidRubySanctumTriggers.h"
 #include "Playerbots.h"
 
+#include <algorithm>
+#include <vector>
+
 // Spell / aura and creature IDs used by triggers
 namespace
 {
@@ -25,21 +28,108 @@ namespace
     // Halion shadow side
     constexpr uint32 SPELL_SOUL_CONSUMPTION       = 74792;
     constexpr uint32 SPELL_MARK_OF_CONSUMPTION    = 74795;
+    constexpr uint32 SPELL_TWILIGHT_REALM         = 74807;
     // Cutter
     constexpr uint32 SPELL_TWILIGHT_CUTTER        = 74768;
     constexpr uint32 SPELL_TWILIGHT_CUTTER_TRIG   = 74769;
+
+    constexpr uint32 GO_HALION_PORTAL_1           = 202794;
+    constexpr uint32 GO_HALION_PORTAL_2           = 202795;
+
+    bool ShouldEnterTwilightRealm(PlayerbotAI* botAI, Player* bot, Group* group)
+    {
+        if (!bot || !group)
+            return false;
+
+        std::vector<Player*> tanks;
+        std::vector<Player*> healers;
+        std::vector<Player*> dps;
+
+        for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (!member || !member->IsAlive())
+                continue;
+
+            if (botAI->IsTank(member))
+                tanks.push_back(member);
+            else if (botAI->IsHeal(member))
+                healers.push_back(member);
+            else
+                dps.push_back(member);
+        }
+
+        int desiredTanks = std::min(1, static_cast<int>(tanks.size()));
+        int desiredHealers = std::min(2, static_cast<int>(healers.size()));
+        int desiredDps = static_cast<int>((dps.size() + 1) / 2);
+
+        for (int i = 0; i < desiredTanks; ++i)
+        {
+            if (tanks[i] == bot)
+                return true;
+        }
+
+        for (int i = 0; i < desiredHealers; ++i)
+        {
+            if (healers[i] == bot)
+                return true;
+        }
+
+        for (int i = 0; i < desiredDps; ++i)
+        {
+            if (dps[i] == bot)
+                return true;
+        }
+
+        return false;
+    }
 }
 
 bool RubySanctumBaltharusSplitAddTrigger::IsActive()
 {
-    GuidVector npcs = AI_VALUE(GuidVector, "nearest hostile npcs");
-    for (ObjectGuid const& guid : npcs)
+    auto hasClone = [&](GuidVector const& units)
     {
-        Unit* u = botAI->GetUnit(guid);
-        if (u && u->GetEntry() == NPC_BALTHARUS_CLONE)
-            return true;
-    }
+        for (ObjectGuid const& guid : units)
+        {
+            Unit* u = botAI->GetUnit(guid);
+            if (u && u->GetEntry() == NPC_BALTHARUS_CLONE)
+                return true;
+        }
+        return false;
+    };
+
+    if (hasClone(AI_VALUE(GuidVector, "nearest hostile npcs")))
+        return true;
+
+    if (hasClone(AI_VALUE(GuidVector, "nearest npcs")))
+        return true;
+
     return false;
+}
+
+bool RubySanctumHalionEnterPortalTrigger::IsActive()
+{
+    Unit* boss = AI_VALUE2(Unit*, "find target", "halion");
+    if (!boss)
+        return false;
+
+    bool phase2 = boss->HealthBelowPct(75) && !boss->HealthBelowPct(50);
+    bool phase3 = boss->HealthBelowPct(50);
+    if (!phase2 && !phase3)
+        return false;
+
+    if (bot->HasAura(SPELL_TWILIGHT_REALM))
+        return false;
+
+    if (phase3)
+    {
+        Group* group = bot->GetGroup();
+        if (!group || !ShouldEnterTwilightRealm(botAI, bot, group))
+            return false;
+    }
+
+    return bot->FindNearestGameObject(GO_HALION_PORTAL_1, 100.0f) ||
+           bot->FindNearestGameObject(GO_HALION_PORTAL_2, 100.0f);
 }
 
 bool RubySanctumBaltharusBrandTrigger::IsActive()
@@ -60,7 +150,18 @@ bool RubySanctumSavianaFlameBeaconTrigger::IsActive()
 
 bool RubySanctumZarithrianCleaveArmorTrigger::IsActive()
 {
-    Aura const* aura = bot->GetAura(SPELL_CLEAVE_ARMOR);
+    if (!botAI->IsTank(bot))
+        return false;
+
+    Unit* boss = AI_VALUE2(Unit*, "find target", "zarithrian");
+    if (!boss)
+        return false;
+
+    Unit* victim = boss->GetVictim();
+    if (!victim || victim == bot)
+        return false;
+
+    Aura const* aura = victim->GetAura(SPELL_CLEAVE_ARMOR);
     return aura && aura->GetStackAmount() >= 2;
 }
 
