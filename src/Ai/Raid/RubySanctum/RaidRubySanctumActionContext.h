@@ -18,6 +18,7 @@ public:
 
         creators["rubysanctum zarithrian cleave armor swap"] = &RaidRubySanctumActionContext::zarithrian_cleave_armor_swap;
         creators["rubysanctum zarithrian adds"] = &RaidRubySanctumActionContext::zarithrian_adds;
+        creators["rubysanctum zarithrian fear"] = &RaidRubySanctumActionContext::zarithrian_fear;
 
         creators["rubysanctum halion combustion"] = &RaidRubySanctumActionContext::halion_combustion;
         creators["rubysanctum halion consumption"] = &RaidRubySanctumActionContext::halion_consumption;
@@ -37,6 +38,7 @@ private:
 
     static Action* zarithrian_cleave_armor_swap(PlayerbotAI* botAI) { return new RubySanctumZarithrianCleaveArmorSwapAction(botAI); }
     static Action* zarithrian_adds(PlayerbotAI* botAI) { return new RubySanctumZarithrianAddsAction(botAI); }
+    static Action* zarithrian_fear(PlayerbotAI* botAI) { return new RubySanctumZarithrianFearAction(botAI); }
 
     static Action* halion_combustion(PlayerbotAI* botAI) { return new RubySanctumHalionCombustionAction(botAI); }
     static Action* halion_consumption(PlayerbotAI* botAI) { return new RubySanctumHalionConsumptionAction(botAI); }

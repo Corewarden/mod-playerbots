@@ -19,6 +19,8 @@ void RaidRubySanctumStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         { NextAction("rubysanctum zarithrian cleave armor swap", ACTION_EMERGENCY + 2) }));
     triggers.push_back(new TriggerNode("rubysanctum zarithrian adds",
         { NextAction("rubysanctum zarithrian adds", ACTION_RAID + 2) }));
+    triggers.push_back(new TriggerNode("rubysanctum zarithrian fear",
+        { NextAction("rubysanctum zarithrian fear", ACTION_EMERGENCY + 1) }));
 
     // Halion P1/P2
     triggers.push_back(new TriggerNode("rubysanctum halion combustion",

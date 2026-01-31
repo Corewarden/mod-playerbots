@@ -47,6 +47,13 @@ public:
     bool IsActive() override;
 };
 
+class RubySanctumZarithrianFearTrigger : public Trigger
+{
+public:
+    explicit RubySanctumZarithrianFearTrigger(PlayerbotAI* botAI) : Trigger(botAI, "rubysanctum zarithrian fear") {}
+    bool IsActive() override;
+};
+
 // Halion
 class RubySanctumHalionCombustionTrigger : public Trigger
 {

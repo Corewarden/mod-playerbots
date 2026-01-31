@@ -18,6 +18,7 @@ public:
 
         creators["rubysanctum zarithrian cleave armor swap"] = &RaidRubySanctumTriggerContext::zarithrian_cleave_armor;
         creators["rubysanctum zarithrian adds"] = &RaidRubySanctumTriggerContext::zarithrian_adds;
+        creators["rubysanctum zarithrian fear"] = &RaidRubySanctumTriggerContext::zarithrian_fear;
 
         creators["rubysanctum halion combustion"] = &RaidRubySanctumTriggerContext::halion_combustion;
         creators["rubysanctum halion consumption"] = &RaidRubySanctumTriggerContext::halion_consumption;
@@ -37,6 +38,7 @@ private:
 
     static Trigger* zarithrian_cleave_armor(PlayerbotAI* botAI) { return new RubySanctumZarithrianCleaveArmorTrigger(botAI); }
     static Trigger* zarithrian_adds(PlayerbotAI* botAI) { return new RubySanctumZarithrianAddsTrigger(botAI); }
+    static Trigger* zarithrian_fear(PlayerbotAI* botAI) { return new RubySanctumZarithrianFearTrigger(botAI); }
 
     static Trigger* halion_combustion(PlayerbotAI* botAI) { return new RubySanctumHalionCombustionTrigger(botAI); }
     static Trigger* halion_consumption(PlayerbotAI* botAI) { return new RubySanctumHalionConsumptionTrigger(botAI); }

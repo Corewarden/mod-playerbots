@@ -18,6 +18,7 @@ namespace
     // Zarithrian
     constexpr uint32 SPELL_CLEAVE_ARMOR           = 74367;
     constexpr uint32 NPC_ONYX_FLAMECALLER         = 39814;
+    constexpr uint32 SPELL_INTIMIDATING_ROAR      = 74384;
 
     // Halion fire side
     constexpr uint32 SPELL_FIERY_COMBUSTION       = 74562;
@@ -83,6 +84,19 @@ namespace
 
         return false;
     }
+}
+
+bool RubySanctumZarithrianFearTrigger::IsActive()
+{
+    Unit* boss = AI_VALUE2(Unit*, "find target", "zarithrian");
+    if (!boss || !boss->HasUnitState(UNIT_STATE_CASTING))
+        return false;
+
+    Spell* currentSpell = boss->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+    if (!currentSpell || !currentSpell->m_spellInfo)
+        return false;
+
+    return currentSpell->m_spellInfo->Id == SPELL_INTIMIDATING_ROAR;
 }
 
 bool RubySanctumBaltharusSplitAddTrigger::IsActive()

@@ -14,7 +14,7 @@ namespace
     constexpr uint32 SPELL_SOUL_CONSUMPTION = 74792;
     constexpr uint32 SPELL_MARK_OF_CONSUMPTION = 74795;
     constexpr uint32 MAP_RUBY_SANCTUM = 724;
-    constexpr float HALION_DISPEL_EDGE_DISTANCE = 28.0f;
+    constexpr float HALION_DISPEL_EDGE_DISTANCE = 32.0f;
 }
 
 class PartyMemberToDispelPredicate : public FindPlayerPredicate, public PlayerbotAIAware

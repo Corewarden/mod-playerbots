@@ -18,10 +18,12 @@ namespace
     constexpr uint32 NPC_LIVING_INFERNO           = 40681;
     constexpr uint32 NPC_LIVING_EMBER             = 40683;
 
+    constexpr uint32 SPELL_FEAR_WARD              = 6346;
+
     constexpr uint32 GO_HALION_PORTAL_1           = 202794;
     constexpr uint32 GO_HALION_PORTAL_2           = 202795;
 
-    constexpr float HALION_EDGE_DISTANCE          = 28.0f;
+    constexpr float HALION_EDGE_DISTANCE          = 32.0f;
 
     void ClearControlledMovement(Player* bot)
     {
@@ -260,6 +262,47 @@ bool RubySanctumZarithrianAddsAction::Execute(Event /*event*/)
     return Attack(target);
 }
 
+bool RubySanctumZarithrianFearAction::Execute(Event /*event*/)
+{
+    ClearControlledMovement(bot);
+
+    Unit* boss = AI_VALUE2(Unit*, "find target", "zarithrian");
+    if (!boss)
+        return false;
+
+    bool acted = false;
+    if (bot->getClass() == CLASS_SHAMAN)
+        acted |= botAI->CastSpell("tremor totem", bot);
+
+    if (bot->getClass() == CLASS_PRIEST)
+    {
+        Player* wardTarget = nullptr;
+        if (Group* group = bot->GetGroup())
+        {
+            for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+            {
+                Player* member = ref->GetSource();
+                if (!member || !member->IsAlive())
+                    continue;
+
+                if (botAI->IsMainTank(member))
+                {
+                    wardTarget = member;
+                    break;
+                }
+            }
+        }
+
+        if (!wardTarget)
+            wardTarget = boss->GetVictim() ? boss->GetVictim()->ToPlayer() : nullptr;
+
+        if (wardTarget && !wardTarget->HasAura(SPELL_FEAR_WARD))
+            acted |= botAI->CastSpell("fear ward", wardTarget);
+    }
+
+    return acted;
+}
+
 bool RubySanctumHalionCombustionAction::Execute(Event /*event*/)
 {
     ClearControlledMovement(bot);
@@ -316,27 +359,20 @@ bool RubySanctumHalionMeteorStrikeAction::Execute(Event /*event*/)
     }
     if (mark)
     {
-        if (Unit* boss = AI_VALUE2(Unit*, "find target", "halion"))
+        Unit* boss = AI_VALUE2(Unit*, "find target", "halion");
+        if (bot->GetExactDist2d(mark) < 12.0f)
+            return MoveAway(mark, 12.0f);
+
+        if (boss)
         {
             if (botAI->IsTank(bot))
-            {
-                float angle = bot->GetAngle(boss) + ANGLE_90_DEG;
-                return Move(angle, 3.0f);
-            }
-        }
+                return Follow(boss, 6.0f, 0.0f);
 
-        bool moved = MoveAway(mark, 12.0f);
-
-        // Reposition to Halion's flank after dodging to avoid breath/tail and keep inside arena bounds
-        if (Unit* boss = AI_VALUE2(Unit*, "find target", "halion"))
-        {
-            if (bot->GetExactDist2d(boss) > 30.0f)
+            if (bot->GetExactDist2d(boss) > 12.0f)
                 return Follow(boss, 10.0f, ANGLE_90_DEG);
-
-            Follow(boss, 8.0f, ANGLE_90_DEG);
         }
 
-        return moved;
+        return false;
     }
     return false;
 }

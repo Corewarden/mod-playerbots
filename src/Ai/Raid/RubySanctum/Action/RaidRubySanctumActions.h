@@ -48,6 +48,13 @@ public:
     bool Execute(Event event) override;
 };
 
+class RubySanctumZarithrianFearAction : public Action
+{
+public:
+    explicit RubySanctumZarithrianFearAction(PlayerbotAI* botAI) : Action(botAI, "rubysanctum zarithrian fear") {}
+    bool Execute(Event event) override;
+};
+
 // Halion
 class RubySanctumHalionCombustionAction : public MovementAction
 {
