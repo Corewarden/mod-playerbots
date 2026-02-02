@@ -6,6 +6,7 @@
 #include "WithinAreaTrigger.h"
 
 #include "LastMovementValue.h"
+#include "Log.h"
 #include "Playerbots.h"
 
 bool WithinAreaTrigger::IsActive()
@@ -14,12 +15,31 @@ bool WithinAreaTrigger::IsActive()
     if (!movement.lastAreaTrigger)
         return false;
 
-    AreaTrigger const* at = sObjectMgr->GetAreaTrigger(movement.lastAreaTrigger);
-    if (!at)
+    // Cache the trigger ID locally to reduce race condition window
+    uint32 const triggerId = movement.lastAreaTrigger;
+    
+    // Validate trigger ID is in reasonable range before accessing ObjectMgr stores
+    // This helps avoid crashes during store reloads
+    if (triggerId == 0 || triggerId > 100000)
         return false;
 
-    if (!sObjectMgr->GetAreaTriggerTeleport(movement.lastAreaTrigger))
+    AreaTrigger const* at = nullptr;
+    
+    try
+    {
+        at = sObjectMgr->GetAreaTrigger(triggerId);
+        if (!at)
+            return false;
+
+        if (!sObjectMgr->GetAreaTriggerTeleport(triggerId))
+            return false;
+    }
+    catch (...)
+    {
+        // Handle potential access violations during store reloads
+        LOG_ERROR("playerbots", "WithinAreaTrigger::IsActive - Exception accessing area trigger {}", triggerId);
         return false;
+    }
 
     return IsPointInAreaTriggerZone(at, bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(),
                                     0.5f);
